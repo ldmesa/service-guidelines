@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Guidelines for developing Linked Data Emotion and Sentiment Analysis services</title>
+        <script 
+            src='https://www.w3.org/Tools/respec/respec-w3c-common' 
+            class='remove'></script>
+        <script class='remove'>
+         var respecConfig = {
+             specStatus: "CG-DRAFT",
+             editors: [{
+                 name: "J. Fernando Sánchez Rada",
+                 url: "http://jfernando.es",
+             },{
+                 name: "Your Name",
+                 url: "http://your-site.com",
+             }],
+             edDraftURI: "http://github.com/ldmesa/service-guidelines",
+             shortName: "ldmesa",
+             isPreview: true,
+             wgURI: "https://w3.org/community/sentiment",
+             wg: "Linked Data Models for Emotion and Sentiment Analysis Community Group",
+             localBiblio: {
+                 "NIF": {
+                     title: "NIF 2.0 Documentation",
+                     href: "http://persistence.uni-leipzig.org/nlp2rdf/",
+                     publisher: "NLP2RDF",
+                 },
+                 "ONYX-vocabularies": {
+                     title: "Onyx vocabularies",
+                     href: "http://www.gsi.upm.es/ontologies/onyx/vocabularies",
+                     publisher: "GSI",
+                 },
+                 "MARL": {
+                     title: "The Marl Ontology",
+                     href: "http://www.gsi.upm.es/ontologies/marl",
+                     publisher: "GSI",
+                 },
+                 "ONYX": {
+                     title: "The Onyx Ontology",
+                     href: "http://www.gsi.upm.es/ontologies/onyx",
+                     publisher: "W3",
+                 },
+                 "PROV-O": {
+                     title: "The PROV Ontology",
+                     href: "https://www.w3.org/TR/prov-o/",
+                     publisher: "W3",
+                 },
+             },
+         };
+        </script>
+    </head>
+    <body>
+        <section id='abstract'>
+            <p>
+                This document summarizes the guidelines and best practices for developing sentiment and emotion analysis services using Linked Data models.
+                The content is based on the experience of the different partners of the Community Group in different projects.
+                In addition to the general purpose of the community group, the aim of this document is to facilitate the creation of new services and to foster interoperability until the creation of a standard in the field.
+                A reference implementation is also provided, to ease adoption and to showcase the capabilities of the approach herein.
+            </p>
+        </section>
+        <section id='sotd'>
+            <p>
+                This is a draft to get comments from the community members, it is subject to change.
+                There are several ways that to participate in the development of these guidelines:
+
+                <ul>
+                    <li>By sending an e-mail to our mailing list: <a href="mailto:public-sentiment@w3.org">public-sentiment@w3.org</a></li>
+                    <li>By creating new issues and pull-requests in our <a href="http://github.com/ldmesa/service-guidelines">public repository</a></li>
+                </ul>
+
+                More information about the Community Group and the work of its members can be found on its <a href="https://www.w3.org/community/sentiment/wiki/">Wiki</a> and the <a href="https://www.w3.org/community/sentiment/">official site</a> at W3.org.
+                If you are a researcher interested in sentiment analysis and linked data, consider joining the group.
+
+            </p>
+        </section>
+        <!-- <section id='bp-summary'></section> -->
+        <section>
+            <h2>Motivation</h2>
+            <p>
+                Currently, there are many commercial social media text analysis tools, and a lot of social media monitoring tools that generate statistics about presence, influence power, customer/followers engagement, which are presented in intuitive charts on the user's dashboard.
+                Opinion and affect mining is an emerging research direction that can be applied in this monitoring.
+                However, the companies offering such services tend not to disclose the methodologies and algorithms they use to process data.
+                The academic community has also shown interest into these domains (Pang andLee, 2008), but it remains a research topic and there is little interest in standardization.
+
+                <!-- However, such solutions are quite generic, are not integrated in the process of product development or in product cycles and definitely are not trained under domain-specific terminology, idioms andcharacteristics. -->
+                <!-- Industry-specific approaches are also available (Aldahawi and Allen, 2013; Abrahams et al., 2012), but still they are not easily configured under integrated, customizable solutions. -->
+                <!-- Opinion mining and trend prediction over social media platforms are emerging research directions with great potential, with companies offering such services tending not to disclose the methodologies and algorithms they use to process data. -->
+            </p>
+            <p>
+                An enormous amount of social media content is created daily.
+                An interesting aspect of this type of media is that there are many features in the source beyond pure text that can be exploited. 
+                Using these features we could gain deeper knowledge and understanding of the user generated content, and ultimately train a system to look for more targeted characteristics.
+                Such a system would be more accurate in processing and categorizing such content.
+                Among the extra features in social media, we find the name of the users who created the content, together with more information about their demographics and other social activities.
+                Another aspect is that users come from different backgrounds (ethnical, cultural, social), speak different languages and discuss a variety of topics.
+                Encoding this extra information is beyond the capabilities of any the existing formats for sentiment analysis.
+                Moreover, different applications require different sentiment and emotion models.
+                For instance, some applications apply binary classification, whereas some require a more fine-grained analysis.
+                This issue affects both the analysis, and the resources used in the analysis (i.e., lexicons, corpora, etc.).
+            </p>
+            <p>
+                The lack of consensus on how to model the heterogeneous context of social media is detrimental in two ways.
+                First, it is hindering the appearance of applications that make deep sense of data.
+                Secondly, it hampers interoperability between services and reuse of resources.
+            </p>
+            A Linked Data approach would tackle both issues.
+            On the one hand, it would enable researchers to use this information, as well as other rich information in the Linked Data cloud.
+            It would also make it possible to infer new knowledge based on existing reusable vocabularies.
+            On the other hand, the combination of a Linked Data approach with a common set of vocabularies would result in higher interoperability, which would make services easier to consume, and would enable new features such as service chaining.
+            A simple inter-operable model would also foster and speed up the creation of new powerful analysis services.
+            </p>
+            <p>
+                The basic NLP aspects of building Linked Data NLP services has been covered in other documents, such as the <a href="https://www.w3.org/2015/09/bpmlod-reports/nif-based-nlp-webservices/">guidelines for developing NIF-based NLP services</a>, by the <a href="https://www.w3.org/community/bpmlod/">BPMLOD Working Group</a>.
+                This document provides a succinct summary of some generic NLP aspects, but it is focused on 
+            </p>
+            </p>
+        </section>
+        <section>
+            <h2>Vocabularies</h2>
+            <p>
+                Services should use existing and well-known vocabularies and ontologies in their request definitions and results.
+                NIF (the NLP Interchange Format) should be used as the base vocabulary for the NLP parts of the service.
+                NIF defines classes to represent linguistic data in its Core Ontology.
+                A more detailed description of the ontology and its purposes can be found in the [[[NIF]]].
+            </p>
+            <p>
+                Sentiments and opinions can be annotated using <a href="#marl">Marl</a>.
+                Emotions and Emotion models can be annotated and modeled with <a href="#onyx">Onyx</a>.
+                Lastly, resources such as corpora can be modeled using vocabularies such as <a href="#lemon">lemon</a>.
+                Provenance information can be added with <a href="#prov-o">PROV-O</a>, unambiguously tying results to the process that generated them, and the resources involved.
+
+            </p>
+
+            <h3 id="marl">Marl</h3>
+            <p>
+                [[[MARL]]] is a vocabulary to annotate and describe subjective opinions expressed on the web or in particular Information Systems. This opinions may be provided by the user (as in online rating and review systems), or extracted from natural text (sentiment analysis).</p>
+            <p>Marl models opinions on the aspect and feature level, which is useful for fine-grained opinions and analysis. Marl follows the Linked Data principles as it is aligned with [[[PROV-O]]]. It also takes a linguistic Linked Data approach: it is aligned with the Provenance Ontology,it represents lexical resources as linked data, and has been integrated with <a href="#lemon">lemon</a>.
+
+            </p>
+            <div class="practice">
+                <p>
+                    <span id="specify-polarity-ranges" class="practicelab">Be explicit about the ranges of polarity values, and use polarity classes when possible</span>
+                </p>
+                <p class="practicedesc">
+                    <!-- The spirit of Linked Data and the Semantic Web is to avoid defining the same concept more than once. -->
+                    Marl gives you the ability to specify the range (maximum and minimum value) for your polarity.
+                    It is recommended to specify these values, for interoperability with other services.
+                    Moreover, marl defines <strong>Positive</strong>, <strong>Neutral</strong> and <strong>Negative</strong> polarities.
+                    This is sufficient for most scenarios, but some applications require more fine-grained categories of sentiment (e.g., mildly positive, very positive).
+                    If such cases, relying on fixed values (e.g., 0.25 for mildly positive) is discouraged.
+                    Instead, the specific polarities used should be properly defined, documented and published for reuse.
+                </p>
+            </div>
+
+            <h3 id="onyx">Onyx</h3>
+            <p>
+                [[[ONYX]]] is a vocabulary for emotions in resources, services and tools. It has been designed with services and lexical resources for Emotion Analysis in mind. </p>
+            <p>What differentiates Onyx from other ontologies for emotion is that instead of adhering to a specific model of emotions, it provides a meta-model for emotions, i.e., it describes the concepts to formalize different models of emotion. These models are known as vocabularies in Onyx’s terminology, following the example of EmotionML. A number of commonly used models have already been integrated and published as linked data. A tool for limited two-way conversion between Onyx representation and EmotionML markup is available, using specific mapping.
+                Just like Marl, Onyx is aligned with the Provenance Ontology, and can be used together with lemon in lexical resources.
+            </p>
+            <div class="practice">
+                <p>
+                    <span id="reuse-onyx-vocabularies" class="practicelab">Reuse existing emotion models</span>
+                </p>
+                <p class="practicedesc">
+                    <!-- The spirit of Linked Data and the Semantic Web is to avoid defining the same concept more than once. -->
+                    There are several emotion models already defined as part of the [[[ONYX-vocabularies]]].
+                    As of this writing, the list includes all EmotionML vocabularies (Ashimura, Kazuyuki et al., 2014), WordNet-Affect (Strapparava, Valitutti, 2004) labels and the hourglass of emotions (Cambria et al., 2012).
+                </p>
+            </div>
+
+            <h3 id="lemon">lemon</h3>
+            <p>
+                lemon is a proposed model for modeling lexicon and machine-readable dictionaries and linked to the SemanticWeb and the Linked Data cloud. It was designed to meet the following challenges:
+                <ul>
+                    <li>
+                        RDF-native form to enable leverage existing Semantic Web technologies (SPARQL, OWL,RIF etc.).
+                    </li>
+                    <li>
+                        Linguistically sound structure based on LMF to enable conversion to existing offline formats.
+                    </li>
+                    <li>
+                        Separation of the lexicon and ontology layers, to ensure compatibility with existing OWL models.
+                    </li>
+                    <li>
+                        Linking to data categories, in order to allow for arbitrarily complex linguistic description.
+                        In particular, the LexInfo vocabulary is aligned to lemon and ISOcat
+                    </li>
+                    <li>
+                        A small model using the principle of the least power - the less expressive the language, the more reusable the data.
+                    </li>
+                </ul>
+                Lemon was developed by the Monnet project as a collaboration between: CITEC at Bielefeld University, DERI at the National University of Ireland, Galway, Universidad Politécnica de Madrid and the Deutsche Forschungszentrum für Künstliche Intelligenz.
+            </p>
+
+            <h3>PROV-O</h3>
+            <p>
+                As stated in the document of the [[[PROV-O]]], provenance is information about entities, activities, and people involved in producing a piece of data or thing, which can be used to form assessments about its quality, reliability or trustworthiness.
+                In the case of sentiment and emotion analysis services, provenance can link the results of an analysis, the request, the resources used in the analysis, and the people and organizations involved in the analysis (e.g., authors).
+            </p>
+            <p>
+                The PROV Ontology (PROV-O) expresses the PROV Data Model using the OWL2 Web Ontology Language (OWL2).
+                It provides a set of classes, properties, and restrictions that can be used to represent and interchange provenance information generated in different systems and under different contexts.
+            </p>
+            <div class="practice">
+                <p>
+                    <span id="use-provenance" class="practicelab">Include provenance information in service results</span>
+                </p>
+                <p class="practicedesc">
+                    <!-- The spirit of Linked Data and the Semantic Web is to avoid defining the same concept more than once. -->
+                    PROV-O should be used to link results from services to the annotation generated (e.g., polarity) with the original content and the algorithm or process that produced the annotation.
+                    Ideally, a reference to all other resources used (e.g., lexicons) and sub-processes should also be included.
+                </p>
+            </div>
+
+
+
+
+        </section>
+        <section>
+            <h2>Recommended service parameters</h2>
+            <p>
+                The [[[NIF]]] defines a set of base and optional parameters for NLP services.
+                In addition to those, sentiment and emotion analysis services require specific parameters to better process sentiment and emotion.
+                The following table presents an extended list of API parameters that includes both base and specific parameters:
+            </p>
+
+
+            <table class="index longlastcol">
+                <thead>
+                    <th>parameter</th>
+                    <th>aliases</th>
+                    <th>example values</th>
+                    <th>description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>input</td>
+                        <td>i</td>
+                        <td> 
+                            <ul>
+                                <li>
+                                    These guidelines are great
+                                </li>
+                                <li>
+                                    <pre class="turtle">
+                  _:Context1 a nif:Context;
+                        nif:isString "Great" .
+                                    </pre>
+                                    
+                                </li>
+                            </ul>
+
+                        </td>
+                        <td> 
+                            serialized data (i.e. the text or other formats, depends on informat)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>informat</td>
+                        <td>f</td>
+                        <td>
+                            <ul>
+                                <li>turtle</li>
+                                <li>text (default)</li>
+                                <li>json-ld</li>
+                            </ul>
+                        </td>
+                        <td>
+                            format in which the input is provided
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>outformat</td>
+                        <td>o</td>
+                        <td>
+                            <ul>
+                                <li>turtle</li>
+                                <li>text</li>
+                                <li>json-ld (default)</li>
+                            </ul>
+                        </td>
+                        <td>
+                            format in which the input is serialized.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>prefix</td>
+                        <td>p</td>
+                        <td>http://service.example/ns</td>
+                        <td>
+                            prefix used to create new IRIs and to expand relative IRIs
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>language</td>
+                        <td>l</td>
+                        <td>
+                            <ul>
+                                <li>en</li>
+                                <li>es</li>
+                            </ul>
+                            <td>
+                                language of the text or content (preferrably as a ISO 639-1 or 639-2 code)
+                            </td>
+                    </tr>
+                    <tr>
+                        <td>domain</td>
+                        <td>d</td>
+                        <td>
+                            <ul>
+                                <li>electronics</li>
+                                <li>http://service.example/ns#banking</li>
+                            </ul>
+                            <td>
+                                domain of the content, which the service may use to provide better results.
+                            </td>
+                    </tr>
+                    <tr>
+                        <td>min-polarity</td>
+                        <td>
+                            <ul>
+                                <li>minpolarity</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>-1</li>
+                                <li>0</li>
+                            </ul
+                        </td>
+                        <td>Minimum polarity value for sentiments. The service should use this parameter to normalize the values of the sentiment annotations.</td>
+                    </tr>
+                    <tr>
+                        <td>max-polarity</td>
+                        <td>
+                            <ul>
+                                <li>maxpolarity</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>1</li>
+                                <li>10</li>
+                            </ul
+                        </td>
+                        <td>Maximum polarity value for sentiments. The service should use this parameter to normalize the values of the sentiment annotations.</td>
+                    </tr>
+                    <tr>
+                        <td>emotion-model</td>
+                        <td>
+                            <ul>
+                                <li>emomodel</li>
+                                <li>emotionmodel</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>emoml:big6_sadness</li>
+                                <li>http://www.gsi.upm.es/ontologies/wnaffect/ns#liking</li>
+                            </ul>
+                        </td>
+                        <td>Emotion model to use in the response</td>
+                    </tr>
+                    <tr>
+                        <td>conversion</td>
+                        <td></td>
+                        <td>
+                            <dl>
+                                <dt>full</dt>
+                                <dd> converted and original elements will appear side-by-side</dd>
+                                <dt>nested</dt>
+                                <dd> converted elements will be shown, and they will include a link to the original element </dd>
+                                <dt>filtered</dt>
+                                <dd> only converted elements will be shown (using `prov:wasGeneratedBy`).</dd>
+                            </dl>
+                        </td>
+                        <td>Define how the results of converting annotations from the service's model to the model specified by the user should be presented in the results.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>Responses</h2>
+            <p> In general, schema-less RDF serialization formats are preferred.
+                Among these, human readable options should be prioritized for user-facing services, for demonstration purposes, and for any service that is meant to be consumed by third parties.
+                A popular choice is Turtle, for its combination of terseness and readability.
+            </p>
+            <p>
+                Unfortunately, there are several reasons that make schema-less unfeasible in certain scenarios.
+                Firstly, support for RDF formats varies depending on the platform and programming language.
+                Another reason to prefer other serialization options is familiarity with the technology.
+                Hence, other formats may be considered, while preserving all semantic information.
+                JSON-LD is a good candidate in this regard, as it mixes one of the most popular serialization formats (JSON) with RDF semantics.
+            </p>
+
+            <h3>JSON-LD schema and context</h3>
+
+            <p>
+                There are two key points to take into consideration when using JSON-LD as serialization format for a service: 1) providing a readable and sensible schema, and 2) maintaining semantics intact.
+            </p>
+
+            <p>
+                JSON-LD allows for the definition of contexts, which can be used to provide semantic information about the structure in the JSON document.
+                A properly crafted context can simplify the structure of the JSON-LD object, and reduce its verbosity.
+            </p>
+
+            <pre id="context-jsonld" title="Minimal context for JSON-LD results" class="note json">
+        {
+         "@context": {
+          "@base": "http://ldmesa.example/",
+          "dc": "http://dublincore.org/2012/06/14/dcelements#",
+          "emoml": "http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#",
+          "prov": "http://www.w3.org/ns/prov#",
+          "marl": "http://www.gsi.upm.es/ontologies/marl/ns#",
+          "nif": "http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#",
+          "onyx": "http://www.gsi.upm.es/ontologies/onyx/ns#",
+          "wna": "http://www.gsi.upm.es/ontologies/wnaffect/ns#",
+          "xsd": "http://www.w3.org/2001/XMLSchema#"
+         }
+        }
+
+            </pre>
+
+            <h3>Examples</h3>
+
+            <p>
+                This section presents examples of results for different kinds of requests.
+
+                <ul>
+                    <li><a href="#example-sentiment">Sentiment Analysis</a>.</li>
+                </ul>
+            </p>
+
+            <pre id="example-sentiment" title="Result of sentiment analysis in JSON-LD" class="example json">
+{
+ "@context": "http://ldmesa.example/context.jsonld",
+ "@id": "me:Result1",
+ "@type": "results",
+ "activities": [
+  {
+   "@id": "_:SAnalysis1_Activity",
+   "@type": "marl:SentimentAnalysis",
+   "prov:wasAssociatedWith": "me:SAnalysis1"
+  }
+ ],
+ "entries": [
+  {
+   "@id": "http://micro.blog/status1",
+   "@type": [
+    "nif:RFC5147String",
+    "nif:Context"
+   ],
+   "nif:isString": "Dear Microsoft, put your Windows Phone on your newest #open technology program. You'll be awesome. #opensource",
+   "sentiments": [
+    {
+     "@id": "http://micro.blog/status1#char=80,97",
+     "nif:beginIndex": 80,
+     "nif:endIndex": 97,
+     "nif:anchorOf": "You'll be awesome.",
+     "marl:hasPolarity": "marl:Positive",
+     "marl:polarityValue": 0.9,
+     "prov:wasGeneratedBy": "_:SAnalysis1_Activity"
+    }
+   ],
+   "emotions": [
+   ]
+  }
+ ]
+}
+            </pre>
+        </section>
+        <section>
+            <h2>Reference implementations</h2>
+            <p>
+                The best way to ensure compatibility and a uniform use of these guidelines is by implementing them in thoroughly tested open source libraries and frameworks.
+                This is a curated list of frameworks and libraries that follow at least some of these guidelines.
+                Please, consider using one of these alternatives before developing an ad-hoc solution.
+                If you find a bug or missing feature in them, contribute to them so the rest of the community can benefit.
+            </p>
+            <p>
+                This is a work in progress. If you have developed a tool or framework that is not in the list, please <a href="#sotd">get in touch with the authors</a>.
+            </p>
+
+            <h3>Python</h3>
+            <p>
+                <dl>
+
+                    <dt><a href="http://github.com/gsi-upm/senpy">Senpy</a></dt>
+                    <dd>Senpy (<a href="http://senpy.readthedocs.io">http://senpy.readthedocs.io</a>) is a python framework for sentiment and emotion analysis services.
+                        It uses a plugin architecture, where the core of the framework takes care of common features of the web service, such as interacting with the user, serializing results and converting between different emotion models.
+                        Specific services are developed as independent plugins, which consist of the minimal parts for the analysis (e.g., a scikit-learn classifier).
+                        A senpy server can host one or more services at the same time.
+
+                    </dd>
+                    
+                </dl>
+            </p>
+        </section>
+    </body>
+</html>
